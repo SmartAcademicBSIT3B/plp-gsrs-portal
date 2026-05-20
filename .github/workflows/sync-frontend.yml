@@ -1,0 +1,41 @@
+name: Sync Frontend Mirror
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "frontend/**"
+      - ".github/workflows/sync-frontend.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sync frontend to backend/frontend
+        run: |
+          rm -rf backend/frontend
+          mkdir -p backend/frontend
+          cp -a frontend/. backend/frontend/
+
+      - name: Commit mirrored frontend (if changed)
+        run: |
+          if git diff --quiet -- backend/frontend; then
+            echo "No sync changes detected"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add backend/frontend
+          git commit -m "chore: sync backend/frontend from frontend"
+          git push
