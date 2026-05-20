@@ -9,7 +9,7 @@
 
   var base = explicitBase || storedBase;
   if (!base) {
-    base = "/backend";
+    base = ""; // Empty base - use absolute paths from frontend
   }
 
   base = base.replace(/\/+$/, "");

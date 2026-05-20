@@ -14,18 +14,25 @@ RUN apt-get update && apt-get install -y \
     && a2enmod headers \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Copy entire backend to the container
+# Copy entire project (frontend + backend + php/auth/api files)
 COPY . .
 
 # Create necessary directories with proper permissions
 RUN chown -R www-data:www-data /var/www/html && \
     chmod -R 755 /var/www/html
 
-# Configure Apache virtual host
+# Configure Apache virtual host - serve frontend with API routing
 RUN cat > /etc/apache2/sites-available/000-default.conf <<'EOF'
 <VirtualHost *:80>
-    DocumentRoot /var/www/html
+    DocumentRoot /var/www/html/frontend
     
+    <Directory /var/www/html/frontend>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    # Allow access to backend API files outside frontend
     <Directory /var/www/html>
         Options Indexes FollowSymLinks
         AllowOverride All
@@ -37,12 +44,21 @@ RUN cat > /etc/apache2/sites-available/000-default.conf <<'EOF'
     Header set Access-Control-Allow-Methods "GET, POST, OPTIONS, DELETE, PUT"
     Header set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
 
-    # Rewrite rules for clean API paths
+    # Rewrite rules - route /api/* to backend API files, everything else to frontend
     <IfModule mod_rewrite.c>
         RewriteEngine On
+        
+        # Allow real files and directories to be accessed normally
         RewriteCond %{REQUEST_FILENAME} !-f
         RewriteCond %{REQUEST_FILENAME} !-d
-        RewriteRule ^api/(.*)$ api/$1 [L]
+        
+        # Route API requests to backend API folder
+        RewriteRule ^api/(.*)$ /backend/api/$1 [L]
+        
+        # Route everything else to frontend (for SPA routing)
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteCond %{REQUEST_FILENAME} !-d
+        RewriteRule ^(.*)$ /frontend/index.php [L]
     </IfModule>
 
     # Logging
@@ -59,7 +75,7 @@ RUN cat > /usr/local/etc/php/conf.d/custom.ini <<'EOF'
 display_errors = Off
 log_errors = On
 error_log = /proc/stderr
-max_upload_size = 50M
+max_upload_filesize = 50M
 upload_max_filesize = 50M
 post_max_size = 50M
 memory_limit = 256M
@@ -68,7 +84,7 @@ EOF
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost/api/health.php || exit 1
+    CMD curl -f http://localhost/frontend/ || exit 1
 
 # Expose port (Render uses PORT env var, defaults to 80)
 EXPOSE 80
