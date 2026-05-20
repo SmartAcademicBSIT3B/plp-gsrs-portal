@@ -29,6 +29,7 @@ RUN cat > /etc/apache2/sites-available/000-default.conf <<'EOF'
 <VirtualHost *:80>
     ServerName localhost
     DocumentRoot /var/www/html/frontend
+    DirectoryIndex index.php index.html
     
     <Directory /var/www/html/frontend>
         Options Indexes FollowSymLinks
@@ -36,9 +37,10 @@ RUN cat > /etc/apache2/sites-available/000-default.conf <<'EOF'
         Require all granted
     </Directory>
 
-    # Allow access to backend API files outside frontend
-    <Directory /var/www/html>
-        Options Indexes FollowSymLinks
+    # Expose API wrappers at /api while frontend stays as DocumentRoot
+    Alias /api /var/www/html/api
+    <Directory /var/www/html/api>
+        Options FollowSymLinks
         AllowOverride All
         Require all granted
     </Directory>
@@ -48,22 +50,7 @@ RUN cat > /etc/apache2/sites-available/000-default.conf <<'EOF'
     Header set Access-Control-Allow-Methods "GET, POST, OPTIONS, DELETE, PUT"
     Header set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
 
-    # Rewrite rules - route /api/* to API files, everything else to frontend
-    <IfModule mod_rewrite.c>
-        RewriteEngine On
-        
-        # Allow real files and directories to be accessed normally
-        RewriteCond %{REQUEST_FILENAME} !-f
-        RewriteCond %{REQUEST_FILENAME} !-d
-        
-        # Route API requests to API folder
-        RewriteRule ^api/(.*)$ /api/$1 [L]
-        
-        # Route everything else to frontend (for SPA routing)
-        RewriteCond %{REQUEST_FILENAME} !-f
-        RewriteCond %{REQUEST_FILENAME} !-d
-        RewriteRule ^(.*)$ /frontend/index.php [L]
-    </IfModule>
+    # No global rewrite fallback needed: frontend is a PHP multi-page app.
 
     # Logging
     ErrorLog ${APACHE_LOG_DIR}/error.log
