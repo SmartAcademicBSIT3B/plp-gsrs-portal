@@ -23,7 +23,7 @@ $client_id = getenv('GOOGLE_OAUTH_CLIENT_ID') ?: '';
 $client_secret = getenv('GOOGLE_OAUTH_CLIENT_SECRET') ?: '';
 
 if ($client_id === '' || $client_secret === '') {
-    header('Location: ../login.php?error=Google OAuth is not configured.');
+    header('Location: /login.php?error=Google OAuth is not configured.');
     exit();
 }
 
@@ -83,14 +83,14 @@ $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
 if ($http_code !== 200) {
-    header("Location: ../login.php?error=Failed to authenticate with Google (Token Error)");
+    header("Location: /login.php?error=Failed to authenticate with Google (Token Error)");
     exit();
 }
 
 $token_data = json_decode($token_response, true);
 
 if (!isset($token_data['access_token'])) {
-    header("Location: ../login.php?error=Failed to get access token from Google");
+    header("Location: /login.php?error=Failed to get access token from Google");
     exit();
 }
 
@@ -111,14 +111,14 @@ $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
 if ($http_code !== 200) {
-    header("Location: ../login.php?error=Failed to retrieve user information from Google");
+    header("Location: /login.php?error=Failed to retrieve user information from Google");
     exit();
 }
 
 $user_data = json_decode($user_response, true);
 
 if (!isset($user_data['email'])) {
-    header("Location: ../login.php?error=Failed to get email from Google account");
+    header("Location: /login.php?error=Failed to get email from Google account");
     exit();
 }
 
@@ -128,7 +128,7 @@ if (!isset($user_data['email'])) {
 $conn = include("../php/config.php");
 
 if (!$conn) {
-    header("Location: ../login.php?error=Database connection failed");
+    header("Location: /login.php?error=Database connection failed");
     exit();
 }
 
@@ -137,7 +137,7 @@ $name = $user_data['name'] ?? 'Google User';
 
 // ✅ DOMAIN VALIDATION: Only allow plpasig.edu.ph accounts
 if (!preg_match('/@plpasig\.edu\.ph$/', $email)) {
-    header("Location: ../login.php?error=Only plpasig.edu.ph accounts are allowed to login.");
+    header("Location: /login.php?error=Only plpasig.edu.ph accounts are allowed to login.");
     exit();
 }
 
@@ -146,7 +146,7 @@ $sql = "SELECT student_id, name, email, status FROM students_user WHERE email = 
 $stmt = $conn->prepare($sql);
 
 if (!$stmt) {
-    header("Location: ../login.php?error=Database error: " . $conn->error);
+    header("Location: /login.php?error=Database error: " . $conn->error);
     exit();
 }
 
@@ -159,7 +159,7 @@ if ($result->num_rows > 0) {
 
     // Check if account is active
     if ($row['status'] !== 'active') {
-        header("Location: ../login.php?error=Your account is not active. Please contact the administrator.");
+        header("Location: /login.php?error=Your account is not active. Please contact the administrator.");
         exit();
     }
 
@@ -174,14 +174,14 @@ if ($result->num_rows > 0) {
     $conn->close();
 
     // Redirect to dashboard
-    header("Location: ../html/mainmenu.php");
+    header("Location: /html/mainmenu.php");
     exit();
 } else {
     // ❌ User not found
     $stmt->close();
     $conn->close();
 
-    header("Location: ../login.php?error=Google account not registered. Please contact the administrator to create an account.");
+    header("Location: /login.php?error=Google account not registered. Please contact the administrator to create an account.");
     exit();
 }
 ?>

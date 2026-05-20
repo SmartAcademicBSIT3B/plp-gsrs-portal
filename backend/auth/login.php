@@ -50,11 +50,11 @@ $email = trim($_POST['email'] ?? '');
 $password = $_POST['password'] ?? '';
 
 if (empty($email) || empty($password)) {
-    respondLoginError('Email and password are required', '../login.php?error=Email and password are required');
+    respondLoginError('Email and password are required', '/login.php?error=Email and password are required');
 }
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    respondLoginError('Invalid email format', '../login.php?error=Invalid email format');
+    respondLoginError('Invalid email format', '/login.php?error=Invalid email format');
 }
 
 // Brute force protection logic
@@ -69,7 +69,7 @@ $result = $stmt->get_result();
 
 if ($result->num_rows === 0) {
     // Email not found
-    respondLoginError('Invalid Email or Password', '../login.php?error=Invalid Email or Password');
+    respondLoginError('Invalid Email or Password', '/login.php?error=Invalid Email or Password');
 }
 
 $row = $result->fetch_assoc();
@@ -78,14 +78,14 @@ $row = $result->fetch_assoc();
 if (!empty($row['locked_until']) && strtotime($row['locked_until']) > time()) {
     respondLoginError(
         'Your account is temporarily locked. Please reactivate via OTP.',
-        '../login.php?error=locked&email=' . urlencode($email),
+        '/login.php?error=locked&email=' . urlencode($email),
         ['locked' => true, 'email' => $email]
     );
 }
 
 // Check if account is inactive
 if ($row['status'] !== 'active') {
-    respondLoginError('Account is not active.', '../login.php?error=Account is not active.');
+    respondLoginError('Account is not active.', '/login.php?error=Account is not active.');
 }
 
 // Hash the password using SHA-256 and compare
@@ -104,7 +104,7 @@ if ($hashedPassword === $row['password']) {
     $_SESSION['email'] = $row['email'];
 
     // Redirect to main menu
-    respondLoginSuccess('../html/mainmenu.php');
+    respondLoginSuccess('/html/mainmenu.php');
 } else {
     // Failed login: increment failed_attempts
     $failed_attempts = (int)$row['failed_attempts'] + 1;
@@ -124,11 +124,11 @@ if ($hashedPassword === $row['password']) {
     if ($lock) {
         respondLoginError(
             'Account locked after 5 failed attempts. Please reactivate via OTP.',
-            '../login.php?error=Account locked after 5 failed attempts. Please reactivate via OTP.',
+            '/login.php?error=Account locked after 5 failed attempts. Please reactivate via OTP.',
             ['locked' => true, 'email' => $email]
         );
     } else {
-        respondLoginError('Invalid Email or Password', '../login.php?error=Invalid Email or Password');
+        respondLoginError('Invalid Email or Password', '/login.php?error=Invalid Email or Password');
     }
 }
 
