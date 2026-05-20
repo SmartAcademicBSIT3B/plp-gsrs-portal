@@ -2,7 +2,7 @@
 session_start();
 
 // Include database config
-$conn = include("../php/config.php");
+$conn = include __DIR__ . "/../php/config.php";
 
 if (!$conn) {
     echo json_encode(['success' => false, 'message' => 'Database connection failed']);

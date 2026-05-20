@@ -2,7 +2,7 @@
 // Verify OTP and unlock account
 header('Content-Type: application/json');
 
-$conn = include("../php/config.php");
+$conn = include __DIR__ . "/../php/config.php";
 if (!$conn) {
     echo json_encode(['success' => false, 'message' => 'Database error.']);
     exit();

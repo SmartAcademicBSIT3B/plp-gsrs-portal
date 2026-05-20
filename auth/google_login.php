@@ -125,7 +125,7 @@ if (!isset($user_data['email'])) {
 // ============================================
 // STEP 4: Verify user exists in database
 // ============================================
-$conn = include("../php/config.php");
+$conn = include __DIR__ . "/../php/config.php";
 
 if (!$conn) {
     header("Location: ../login.php?error=Database connection failed");

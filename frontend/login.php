@@ -624,7 +624,7 @@ async function handleLoginSubmit(event) {
 
 // Validate email as user types - show tooltip on wrong domain
 function validateEmailTyping(input) {
-    const email = input.value;
+    const email = String(input.value || '').trim().toLowerCase();
     if (email && !email.endsWith('@plpasig.edu.ph')) {
         input.setCustomValidity('Only plpasig.edu.ph email addresses are allowed');
         input.reportValidity();
@@ -635,7 +635,7 @@ function validateEmailTyping(input) {
 
 // Validate login email domain on form submit
 function validateLoginEmail() {
-    const email = document.getElementById('loginEmail').value;
+    const email = String(document.getElementById('loginEmail').value || '').trim().toLowerCase();
 
     if (!email.endsWith('@plpasig.edu.ph')) {
         // Show native tooltip popup

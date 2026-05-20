@@ -2,7 +2,7 @@
 session_start();
 
 // Include database configuration
-$conn = include("../php/config.php");
+$conn = include __DIR__ . "/../php/config.php";
 
 if (!$conn) {
     die("Database connection failed");
@@ -46,7 +46,7 @@ function respondLoginSuccess($redirect) {
 }
 
 // Validate and sanitize input
-$email = trim($_POST['email'] ?? '');
+$email = strtolower(trim($_POST['email'] ?? ''));
 $password = $_POST['password'] ?? '';
 
 if (empty($email) || empty($password)) {
@@ -58,7 +58,7 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 }
 
 // Brute force protection logic
-$sql = "SELECT student_id, name, email, password, status, failed_attempts, locked_until FROM students_user WHERE email = ? LIMIT 1";
+$sql = "SELECT student_id, name, email, password, status, failed_attempts, locked_until FROM students_user WHERE LOWER(email) = ? LIMIT 1";
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
     die("Prepare failed: " . $conn->error);
@@ -84,13 +84,24 @@ if (!empty($row['locked_until']) && strtotime($row['locked_until']) > time()) {
 }
 
 // Check if account is inactive
-if ($row['status'] !== 'active') {
+if (strtolower((string)$row['status']) !== 'active') {
     respondLoginError('Account is not active.', '../login.php?error=Account is not active.');
 }
 
-// Hash the password using SHA-256 and compare
-$hashedPassword = hash('sha256', $password);
-if ($hashedPassword === $row['password']) {
+// Support modern password hashes and legacy SHA-256 hashes.
+$storedPassword = (string)$row['password'];
+$isPasswordValid = false;
+
+if (password_get_info($storedPassword)['algo'] !== null) {
+    $isPasswordValid = password_verify($password, $storedPassword);
+}
+
+if (!$isPasswordValid) {
+    $hashedPassword = hash('sha256', $password);
+    $isPasswordValid = hash_equals($storedPassword, $hashedPassword);
+}
+
+if ($isPasswordValid) {
     // Successful login: reset failed_attempts and locked_until
     $resetSql = "UPDATE students_user SET failed_attempts = 0, locked_until = NULL WHERE student_id = ?";
     $resetStmt = $conn->prepare($resetSql);
