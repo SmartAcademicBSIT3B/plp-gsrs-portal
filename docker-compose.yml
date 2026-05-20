@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "8080:80"
+    environment:
+      FRONTEND_ORIGINS: "http://localhost:5500,http://127.0.0.1:5500"
+      API_BASE_URL: "http://localhost:8080"
+      MYSQL_HOST: mysql
+      MYSQL_USER: plp_user
+      MYSQL_PASSWORD: plp_password
+      MYSQL_DATABASE: plp_gsrs
+      GOOGLE_OAUTH_CLIENT_ID: "${GOOGLE_OAUTH_CLIENT_ID}"
+      GOOGLE_OAUTH_CLIENT_SECRET: "${GOOGLE_OAUTH_CLIENT_SECRET}"
+    depends_on:
+      - mysql
+    volumes:
+      - ./backend:/var/www/html
+    networks:
+      - plp-network
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_USER: plp_user
+      MYSQL_PASSWORD: plp_password
+      MYSQL_DATABASE: plp_gsrs
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - plp-network
+
+volumes:
+  mysql_data:
+
+networks:
+  plp-network:
+    driver: bridge

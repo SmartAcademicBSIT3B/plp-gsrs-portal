@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: plp-gsrs-backend
+    runtime: docker
+    plan: starter
+    dockerfile: ./backend/Dockerfile
+    region: oregon
+    envVars:
+      - key: MYSQL_HOST
+        scope: build
+      - key: MYSQL_PORT
+        value: "3306"
+      - key: MYSQL_USER
+        scope: build
+      - key: MYSQL_PASSWORD
+        scope: build
+      - key: MYSQL_DATABASE
+        value: plp_gsrs
+      - key: FRONTEND_ORIGINS
+        scope: build
+      - key: API_BASE_URL
+        scope: build
+      - key: GOOGLE_OAUTH_CLIENT_ID
+        scope: build
+      - key: GOOGLE_OAUTH_CLIENT_SECRET
+        scope: build
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USERNAME
+        scope: build
+      - key: SMTP_PASSWORD
+        scope: build
+      - key: SMTP_FROM_EMAIL
+        scope: build
+
+databases:
+  - name: plp-gsrs-mysql
+    plan: starter
+    databaseName: plp_gsrs
+    user: plp_user
+    region: oregon
