@@ -16,6 +16,8 @@ loadEnvFile(__DIR__ . '/../.env');
 //    - http://localhost:8000/auth/google_login.php (PHP built-in server)
 //    - http://localhost/THESIS_CAPSTONE/auth/google_login.php (XAMPP/htdocs setup)
 // 7. Copy your Client ID and Client Secret below
+// 8. (Recommended for Render) set GOOGLE_OAUTH_REDIRECT_URI to the exact callback URL,
+//    e.g. https://plp-gsrs-portal.onrender.com/api/auth/google_login.php
 
 $client_id = getenv('GOOGLE_OAUTH_CLIENT_ID') ?: '';
 $client_secret = getenv('GOOGLE_OAUTH_CLIENT_SECRET') ?: '';
@@ -26,9 +28,14 @@ if ($client_id === '' || $client_secret === '') {
 }
 
 // Build redirect URI dynamically so it matches the actual request host and scheme
-$scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-$script_path = $_SERVER['SCRIPT_NAME'] ?? '/auth/google_login.php';
-$redirect_uri = $scheme . '://' . $_SERVER['HTTP_HOST'] . $script_path;
+$forwarded_proto = strtolower(trim((string)($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')));
+$is_https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || strpos($forwarded_proto, 'https') !== false;
+$scheme = $is_https ? 'https' : 'http';
+
+$script_path = $_SERVER['SCRIPT_NAME'] ?? '/api/auth/google_login.php';
+$dynamic_redirect_uri = $scheme . '://' . $_SERVER['HTTP_HOST'] . $script_path;
+$configured_redirect_uri = trim((string)(getenv('GOOGLE_OAUTH_REDIRECT_URI') ?: ''));
+$redirect_uri = $configured_redirect_uri !== '' ? $configured_redirect_uri : $dynamic_redirect_uri;
 
 // ============================================
 // STEP 1: Check if returning from Google with authorization code

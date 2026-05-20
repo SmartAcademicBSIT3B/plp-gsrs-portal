@@ -26,6 +26,8 @@ services:
         scope: build
       - key: GOOGLE_OAUTH_CLIENT_SECRET
         scope: build
+      - key: GOOGLE_OAUTH_REDIRECT_URI
+        value: https://plp-gsrs-portal.onrender.com/api/auth/google_login.php
       - key: SMTP_HOST
         value: smtp.gmail.com
       - key: SMTP_PORT
