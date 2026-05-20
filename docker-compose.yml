@@ -19,7 +19,7 @@ services:
     depends_on:
       - mysql
     volumes:
-      - ./backend:/var/www/html
+      - ./:/var/www/html
     networks:
       - plp-network
 

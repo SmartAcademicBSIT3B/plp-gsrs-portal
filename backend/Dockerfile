@@ -24,6 +24,7 @@ RUN chown -R www-data:www-data /var/www/html && \
 # Configure Apache virtual host - serve frontend with API routing
 RUN cat > /etc/apache2/sites-available/000-default.conf <<'EOF'
 <VirtualHost *:80>
+    ServerName localhost
     DocumentRoot /var/www/html/frontend
     
     <Directory /var/www/html/frontend>
@@ -84,7 +85,7 @@ EOF
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost/frontend/ || exit 1
+    CMD curl -f http://localhost/ || exit 1
 
 # Expose port (Render uses PORT env var, defaults to 80)
 EXPOSE 80
