@@ -292,6 +292,7 @@ if (!$thesis_data) {
         </aside>
     </div>
 </div>
+<script src="../js/api-client.js"></script>
 <script>
 (() => {
     const monthLabel = document.getElementById('calendarMonth');
@@ -454,7 +455,7 @@ document.addEventListener('click', function(e) {
                 formData.append('requirement', `requirement_${templateId}`);
                 formData.append('file', fileInput.files[0]);
                 
-                fetch('../php/ojt_upload.php', {
+                apiFetch('/api/php/ojt_upload.php', {
                     method: 'POST',
                     body: formData
                 })

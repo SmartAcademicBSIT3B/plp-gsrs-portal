@@ -500,6 +500,7 @@ $can_access_progress_tabs = in_array($student_status_label, ['deployed', 'ojt co
     </div>
 </div>
 
+<script src="../js/api-client.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const tabs = Array.from(document.querySelectorAll(".tab"));
@@ -717,7 +718,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (scheduleCheckInFlight) return;
         scheduleCheckInFlight = true;
         try {
-            const response = await fetch("../php/ojt_schedule.php?action=get");
+            const response = await apiFetch('/api/php/ojt_schedule.php?action=get');
             const data = await parseJsonSafely(response);
             if (!data.success) {
                 await showAlert(data.error || "Unable to check OJT schedule.", "Daily Time Record");
@@ -787,7 +788,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const tabKey = tabKeyFromPanel(panelId);
         try {
-            const response = await fetch(`../php/ojt_tab_loader.php?tab=${encodeURIComponent(tabKey)}`);
+            const response = await apiFetch(`/api/php/ojt_tab_loader.php?tab=${encodeURIComponent(tabKey)}`);
             const data = await response.json();
             if (!data.success) {
                 panel.innerHTML = `<div class="panel-loading">${data.error || "Failed to load panel."}</div>`;
@@ -836,7 +837,7 @@ document.addEventListener("DOMContentLoaded", function () {
         formData.append("file", file);
 
         try {
-            const response = await fetch("../php/ojt_upload.php", { method: "POST", body: formData });
+            const response = await apiFetch('/api/php/ojt_upload.php', { method: "POST", body: formData });
             const data = await parseJsonSafely(response);
             if (!data.success) {
                 await showAlert(data.error || "Upload failed", "Upload Failed");
@@ -883,7 +884,7 @@ document.addEventListener("DOMContentLoaded", function () {
             formData.set("week_start_date", weekStartDate);
 
             try {
-                const response = await fetch("../php/ojt_weekly_upload.php?action=save", {
+                const response = await apiFetch('/api/php/ojt_weekly_upload.php?action=save', {
                     method: "POST",
                     body: formData,
                 });
@@ -918,7 +919,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             try {
-                const response = await fetch("../php/ojt_schedule.php?action=save", {
+                const response = await apiFetch('/api/php/ojt_schedule.php?action=save', {
                     method: "POST",
                     body: formData,
                 });
@@ -965,7 +966,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             try {
-                const response = await fetch("../php/ojt_attendance_manage.php?action=save", {
+                const response = await apiFetch('/api/php/ojt_attendance_manage.php?action=save', {
                     method: "POST",
                     body: formData,
                 });
@@ -1045,7 +1046,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 action: "remove",
                 section,
             });
-            const response = await fetch("../php/ojt_upload.php", { method: "POST", body: params });
+            const response = await apiFetch('/api/php/ojt_upload.php', { method: "POST", body: params });
             const data = await parseJsonSafely(response);
             if (!data.success) {
                 await showAlert(data.error || "Remove failed", "Remove Failed");
@@ -1083,7 +1084,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             const params = new URLSearchParams({ section, action });
-            const response = await fetch("../php/ojt_requirements_submit.php", { method: "POST", body: params });
+            const response = await apiFetch('/api/php/ojt_requirements_submit.php', { method: "POST", body: params });
             const data = await parseJsonSafely(response);
             if (!data.success) {
                 await showAlert(data.error || "Action failed", "Action Failed");
@@ -1127,7 +1128,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!shouldDeleteWeek) return;
 
             const params = new URLSearchParams({ action: "delete", week_number: weekNumber });
-            const response = await fetch("../php/ojt_weekly_upload.php", { method: "POST", body: params });
+            const response = await apiFetch('/api/php/ojt_weekly_upload.php', { method: "POST", body: params });
             const data = await parseJsonSafely(response);
             if (!data.success) {
                 await showAlert(data.error || "Failed to delete weekly report.", "Weekly Reports");
@@ -1160,7 +1161,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const params = new URLSearchParams({
                 id: attendanceTimeoutBtn.dataset.recordId,
             });
-            const response = await fetch("../php/ojt_attendance_manage.php?action=timeout", {
+            const response = await apiFetch('/api/php/ojt_attendance_manage.php?action=timeout', {
                 method: "POST",
                 body: params,
             });
@@ -1203,7 +1204,7 @@ document.addEventListener("DOMContentLoaded", function () {
             formData.set("time_in", timeIn);
             formData.set("notes", notesValue);
 
-            const response = await fetch("../php/ojt_attendance_manage.php?action=save", {
+            const response = await apiFetch('/api/php/ojt_attendance_manage.php?action=save', {
                 method: "POST",
                 body: formData,
             });
@@ -1245,7 +1246,7 @@ document.addEventListener("DOMContentLoaded", function () {
         formData.set("notes", notesValue);
         formData.set("proof_file", file);
 
-        const response = await fetch("../php/ojt_attendance_manage.php?action=save", {
+        const response = await apiFetch('/api/php/ojt_attendance_manage.php?action=save', {
             method: "POST",
             body: formData,
         });

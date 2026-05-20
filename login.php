@@ -72,7 +72,7 @@ if (isset($_SESSION['student_id'])) {
             </p>
 
             <!-- ✅ FORM ADDED -->
-            <form id="loginForm" action="auth/login.php" method="POST" onsubmit="handleLoginSubmit(event)">
+            <form id="loginForm" action="/backend/api/auth/login.php" method="POST" onsubmit="handleLoginSubmit(event)">
 
                 <label>Email Address</label>
                 <input type="email" id="loginEmail" name="email" required oninput="validateEmailTyping(this)">
@@ -171,6 +171,7 @@ if (isset($_SESSION['student_id'])) {
     </div>
 </div>
 
+<script src="js/api-client.js"></script>
 <script>
 window.addEventListener('DOMContentLoaded', function() {
     document.body.classList.add('page-ready');
@@ -219,7 +220,7 @@ function sendReactivationOTP() {
     const sendBtn = btns[0];
     sendBtn.disabled = true;
     sendBtn.textContent = 'Sending...';
-    fetch('auth/reactivate_send_otp.php', {
+    apiFetch('/api/auth/reactivate_send_otp.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'email=' + encodeURIComponent(email)
@@ -252,7 +253,7 @@ function verifyReactivationOTP() {
     const btns = document.querySelectorAll('#reactivateModal button');
     btns[1].disabled = true;
     btns[1].textContent = 'Verifying...';
-    fetch('auth/reactivate_verify_otp.php', {
+    apiFetch('/api/auth/reactivate_verify_otp.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'email=' + encodeURIComponent(email) + '&otp=' + encodeURIComponent(otp)
@@ -376,7 +377,7 @@ function sendOTP() {
     const originalText = sendBtn.textContent;
     sendBtn.textContent = 'Sending...';
 
-    fetch('auth/forgot_password.php', {
+    apiFetch('/api/auth/forgot_password.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -417,7 +418,7 @@ function verifyOTP() {
         return;
     }
 
-    fetch('auth/verify_otp.php', {
+    apiFetch('/api/auth/verify_otp.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -458,7 +459,7 @@ function resendOTP() {
     const originalText = resendBtn.textContent;
     resendBtn.textContent = 'Resending...';
 
-    fetch('auth/forgot_password.php', {
+    apiFetch('/api/auth/forgot_password.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -521,7 +522,7 @@ function resetPassword() {
         return;
     }
 
-    fetch('auth/reset_password.php', {
+    apiFetch('/api/auth/reset_password.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -555,7 +556,7 @@ window.onclick = function(event) {
 
 function loginWithGoogle() {
     // Redirect to Google OAuth handler
-    navigateWithFade('auth/google_login.php');
+    navigateWithFade(apiUrl('/api/auth/google_login.php'));
 }
 
 function showLoginError(message) {
@@ -590,7 +591,7 @@ async function handleLoginSubmit(event) {
 
     try {
         const formData = new FormData(form);
-        const response = await fetch(form.action, {
+        const response = await apiFetch('/api/auth/login.php', {
             method: 'POST',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',

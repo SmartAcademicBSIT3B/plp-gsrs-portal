@@ -117,7 +117,7 @@ $profile_image_url = $student_profile['profile_image_url'] ?? '';
 
             <div class="profile-menu">
                 <button onclick="openProfileModal()">My Profile</button>
-                <button onclick="window.location.href='../auth/logout.php'">
+                <button onclick="window.location.href=apiUrl('/api/auth/logout.php')">
                     Logout
                 </button>
             </div>
@@ -250,6 +250,7 @@ $profile_image_url = $student_profile['profile_image_url'] ?? '';
     </div>
 </div>
 
+<script src="../js/api-client.js"></script>
 <script>
 lucide.createIcons();
 
@@ -444,7 +445,7 @@ function uploadProfileImage(input) {
     if (!file) return;
     const formData = new FormData();
     formData.append('profile_image', file);
-    fetch('../php/upload_profile_image.php', {
+    apiFetch('/api/php/upload_profile_image.php', {
         method: 'POST',
         body: formData
     })
@@ -489,7 +490,7 @@ function saveContactNumber(btn) {
     const fd = new FormData();
     fd.append('contact_no', val);
 
-    fetch('../php/update_contact.php', { method: 'POST', body: fd })
+    apiFetch('/api/php/update_contact.php', { method: 'POST', body: fd })
     .then(r => r.json())
     .then(data => {
         if (data.success) {
@@ -548,7 +549,7 @@ function submitChangePassword() {
     formData.append('current_password', current);
     formData.append('new_password', newPw);
 
-    fetch('../php/change_password.php', { method: 'POST', body: formData })
+    apiFetch('/api/php/change_password.php', { method: 'POST', body: formData })
     .then(res => res.json())
     .then(data => {
         if (data.success) {
