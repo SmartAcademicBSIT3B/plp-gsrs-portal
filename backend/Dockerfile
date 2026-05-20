@@ -17,6 +17,9 @@ RUN apt-get update && apt-get install -y \
 # Copy entire project (frontend + backend + php/auth/api files)
 COPY . .
 
+# Suppress Apache startup warning about missing ServerName
+RUN echo "ServerName localhost" > /etc/apache2/conf-available/servername.conf && a2enconf servername
+
 # Create necessary directories with proper permissions
 RUN chown -R www-data:www-data /var/www/html && \
     chmod -R 755 /var/www/html
@@ -45,7 +48,7 @@ RUN cat > /etc/apache2/sites-available/000-default.conf <<'EOF'
     Header set Access-Control-Allow-Methods "GET, POST, OPTIONS, DELETE, PUT"
     Header set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
 
-    # Rewrite rules - route /api/* to backend API files, everything else to frontend
+    # Rewrite rules - route /api/* to API files, everything else to frontend
     <IfModule mod_rewrite.c>
         RewriteEngine On
         
@@ -53,8 +56,8 @@ RUN cat > /etc/apache2/sites-available/000-default.conf <<'EOF'
         RewriteCond %{REQUEST_FILENAME} !-f
         RewriteCond %{REQUEST_FILENAME} !-d
         
-        # Route API requests to backend API folder
-        RewriteRule ^api/(.*)$ /backend/api/$1 [L]
+        # Route API requests to API folder
+        RewriteRule ^api/(.*)$ /api/$1 [L]
         
         # Route everything else to frontend (for SPA routing)
         RewriteCond %{REQUEST_FILENAME} !-f
