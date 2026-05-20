@@ -11,7 +11,7 @@ if (!isset($_SESSION['student_id'])) {
 }
 
 // DB connection
-$conn = include("../php/config.php");
+$conn = include("../../php/config.php");
 if (!$conn) {
     die("<div style='color:red'>Database connection failed.</div>");
 }

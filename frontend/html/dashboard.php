@@ -8,7 +8,7 @@ if (!isset($_SESSION['student_id'])) {
 }
 
 // Fetch student data and linked thesis/capstone
-$conn = include("../php/config.php");
+$conn = include("../../php/config.php");
 $student_id = $_SESSION['student_id'];
 $thesis_data = null;
 $ojt_status = null;

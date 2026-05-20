@@ -7,6 +7,9 @@ if (!isset($_SESSION['student_id'])) {
     exit();
 }
 
+// Connect to database
+$conn = include("../../php/config.php");
+
 function format_name_surname_first($name) {
     $raw = trim((string)$name);
     if ($raw === '') {
@@ -122,7 +125,7 @@ function get_ojt_requirement_tab_labels($conn, $department) {
 }
 
 // Include database config to get student + OJT data
-$conn = include("../php/config.php");
+$conn = include("../../php/config.php");
 $student_data = null;
 $partner_profile = null;
 $connected_thesis_status = 'Not Approved';

@@ -8,7 +8,7 @@ if (!isset($_SESSION['student_id'])) {
 }
 
 // Include database config to get student data
-$conn = include("../php/config.php");
+$conn = include("../../php/config.php");
 $student_data = null;
 
 if ($conn) {

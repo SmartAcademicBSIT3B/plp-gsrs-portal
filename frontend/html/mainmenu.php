@@ -8,7 +8,7 @@ if (!isset($_SESSION['student_id'])) {
 }
 
 // Fetch student OJT profile (JOIN students_user + ojt_students on student_id)
-$conn = include("../php/config.php");
+$conn = include("../../php/config.php");
 $student_profile = null;
 if ($conn) {
     try {
