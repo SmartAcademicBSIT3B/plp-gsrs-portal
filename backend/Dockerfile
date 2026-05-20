@@ -40,7 +40,6 @@ RUN cat > /etc/apache2/sites-available/000-default.conf <<'EOF'
     # Rewrite rules for clean API paths
     <IfModule mod_rewrite.c>
         RewriteEngine On
-        RewriteBase /
         RewriteCond %{REQUEST_FILENAME} !-f
         RewriteCond %{REQUEST_FILENAME} !-d
         RewriteRule ^api/(.*)$ api/$1 [L]
