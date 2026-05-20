@@ -173,6 +173,9 @@ if (isset($_SESSION['student_id'])) {
 
 <script src="js/api-client.js"></script>
 <script>
+window.__API_BASE_URL__ = 'https://plp-gsrs-portal.onrender.com';
+</script>
+<script>
 window.addEventListener('DOMContentLoaded', function() {
     document.body.classList.add('page-ready');
 });

@@ -252,6 +252,9 @@ $profile_image_url = $student_profile['profile_image_url'] ?? '';
 
 <script src="../js/api-client.js"></script>
 <script>
+window.__API_BASE_URL__ = 'https://plp-gsrs-portal.onrender.com';
+</script>
+<script>
 lucide.createIcons();
 
 function isMobileSidebarMode() {

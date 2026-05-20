@@ -294,6 +294,9 @@ if (!$thesis_data) {
 </div>
 <script src="../js/api-client.js"></script>
 <script>
+window.__API_BASE_URL__ = 'https://plp-gsrs-portal.onrender.com';
+</script>
+<script>
 (() => {
     const monthLabel = document.getElementById('calendarMonth');
     const yearLabel = document.getElementById('calendarYear');

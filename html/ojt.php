@@ -502,6 +502,9 @@ $can_access_progress_tabs = in_array($student_status_label, ['deployed', 'ojt co
 
 <script src="../js/api-client.js"></script>
 <script>
+window.__API_BASE_URL__ = 'https://plp-gsrs-portal.onrender.com';
+</script>
+<script>
 document.addEventListener("DOMContentLoaded", function () {
     const tabs = Array.from(document.querySelectorAll(".tab"));
     const panels = Array.from(document.querySelectorAll(".tab-panel"));
