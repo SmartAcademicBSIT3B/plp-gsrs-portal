@@ -1,9 +1,12 @@
 <?php
-$host = "mysql-eac28ff-smartacademicbsit3b-fb16.b.aivencloud.com";
-$port = 25442;
-$user = "avnadmin";
-$pass = "AVNS__-yJEBgGhuiklEhCWdS";
-$dbname = "CTAPLP";
+require_once __DIR__ . '/env_loader.php';
+loadEnvFile(__DIR__ . '/../.env');
+
+$host = getenv('DB_HOST') ?: 'localhost';
+$port = (int)(getenv('DB_PORT') ?: 3306);
+$user = getenv('DB_USER') ?: '';
+$pass = getenv('DB_PASS') ?: '';
+$dbname = getenv('DB_NAME') ?: '';
 
 $conn = new mysqli($host, $user, $pass, $dbname, $port);
 

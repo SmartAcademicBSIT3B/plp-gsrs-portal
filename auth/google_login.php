@@ -1,5 +1,7 @@
 <?php
 session_start();
+require_once __DIR__ . '/../php/env_loader.php';
+loadEnvFile(__DIR__ . '/../.env');
 
 // ============================================
 // GOOGLE OAUTH 2.0 CONFIGURATION
@@ -15,8 +17,13 @@ session_start();
 //    - http://localhost/THESIS_CAPSTONE/auth/google_login.php (XAMPP/htdocs setup)
 // 7. Copy your Client ID and Client Secret below
 
-$client_id = '676458007174-m7nomcu3gvlnqsmpb73v4uoee7q324ld.apps.googleusercontent.com';
-$client_secret = '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';
+$client_id = getenv('GOOGLE_OAUTH_CLIENT_ID') ?: '';
+$client_secret = getenv('GOOGLE_OAUTH_CLIENT_SECRET') ?: '';
+
+if ($client_id === '' || $client_secret === '') {
+    header('Location: ../login.php?error=Google OAuth is not configured.');
+    exit();
+}
 
 // Build redirect URI dynamically so it matches the actual request host and scheme
 $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
