@@ -644,6 +644,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function setUploadIndicator(target, isUploading, loadingLabel) {
         if (!target) return;
         const tag = String(target.tagName || "").toUpperCase();
+        const isButtonLike = tag === "BUTTON" || tag === "INPUT";
         if (isUploading) {
             if (typeof target.dataset.originalText === "undefined") {
                 target.dataset.originalText = target.textContent.trim();
@@ -652,10 +653,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 target.textContent = loadingLabel;
             }
             target.classList.add("loading");
-            if (tag === "BUTTON" || tag === "INPUT") {
+            if (isButtonLike) {
                 target.disabled = true;
             } else {
-                target.style.pointerEvents = "none";
+                target.setAttribute('aria-disabled', 'true');
+                target.classList.add('is-disabled');
+                if (target.hasAttribute('tabindex')) {
+                    target.dataset._origTabindex = target.getAttribute('tabindex');
+                }
+                target.setAttribute('tabindex', '-1');
+                target.style.pointerEvents = 'none';
             }
         } else {
             if (typeof target.dataset.originalText !== "undefined") {
@@ -663,10 +670,18 @@ document.addEventListener("DOMContentLoaded", function () {
                 delete target.dataset.originalText;
             }
             target.classList.remove("loading");
-            if (tag === "BUTTON" || tag === "INPUT") {
+            if (isButtonLike) {
                 target.disabled = false;
             } else {
-                target.style.pointerEvents = "";
+                target.removeAttribute('aria-disabled');
+                target.classList.remove('is-disabled');
+                if (typeof target.dataset._origTabindex !== 'undefined') {
+                    target.setAttribute('tabindex', target.dataset._origTabindex);
+                    delete target.dataset._origTabindex;
+                } else {
+                    target.removeAttribute('tabindex');
+                }
+                target.style.pointerEvents = '';
             }
         }
     }

@@ -290,6 +290,7 @@
 :root {
   --bg-gradient-start: #1f4d07;
   --bg-gradient-end: #053202;
+  --bg-solid: #153a06;
 
   --app-bg: #f6f6f6;
   --secondary-bg: #ececec;
@@ -329,11 +330,7 @@ body {
   width: 80px;
   min-width: 80px;
   height: 100vh;
-  background: linear-gradient(
-    to bottom,
-    var(--bg-gradient-start),
-    var(--bg-gradient-end)
-  );
+  background: var(--bg-solid);
   padding: 20px 0;
   display: flex;
   flex-direction: column;
@@ -681,7 +678,7 @@ body {
 .page-content {
   flex: 1;
   display: flex;
-  overflow: hidden;
+  overflow: auto;
 }
 
 #content-frame {

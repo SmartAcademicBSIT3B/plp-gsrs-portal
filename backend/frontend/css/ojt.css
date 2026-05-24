@@ -586,6 +586,12 @@ body {
   }
 }
 
+.is-disabled {
+  opacity: 0.72 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
 .panel-actions {
   display: flex;
   justify-content: flex-end;
