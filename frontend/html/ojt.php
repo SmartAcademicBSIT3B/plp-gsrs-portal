@@ -686,6 +686,40 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    function showRequirementLoading(section, requirementKey, isLoading, label) {
+        try {
+            const panelId = panelIdFromSection(section);
+            const panel = document.getElementById(panelId);
+            if (!panel) return;
+            const req = panel.querySelector(`.req[data-requirement-key="${requirementKey}"]`);
+            if (!req) return;
+
+            if (isLoading) {
+                if (!req.querySelector('.req-loading-overlay')) {
+                    req.style.position = req.style.position || 'relative';
+                    const overlay = document.createElement('div');
+                    overlay.className = 'req-loading-overlay';
+                    overlay.innerHTML = `
+                        <div class="req-loading-inner">
+                            <div class="req-loading-spinner" aria-hidden="true"></div>
+                            <div class="req-loading-text">${escapeHtml(label || 'Uploading...')}</div>
+                        </div>
+                    `;
+                    req.appendChild(overlay);
+                } else {
+                    req.querySelector('.req-loading-overlay').style.display = 'flex';
+                }
+                req.classList.add('loading-card');
+            } else {
+                const overlay = req.querySelector('.req-loading-overlay');
+                if (overlay) overlay.style.display = 'none';
+                req.classList.remove('loading-card');
+            }
+        } catch (e) {
+            // fail silently
+        }
+    }
+
     function getLocalDateString(date = new Date()) {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -884,6 +918,10 @@ document.addEventListener("DOMContentLoaded", function () {
         formData.append("section", selectedRequirementUpload.section);
         formData.append("file", file);
 
+        // Show requirement card loader for pre/post sections for a professional UX
+        if (selectedRequirementUpload && (selectedRequirementUpload.section === 'pre' || selectedRequirementUpload.section === 'post')) {
+            showRequirementLoading(selectedRequirementUpload.section, selectedRequirementUpload.requirementKey, true, 'Uploading...');
+        }
         setUploadIndicator(selectedRequirementUpload.trigger, true, "Uploading...");
         try {
             const response = await apiFetch('/api/php/ojt_upload.php', { method: "POST", body: formData });
@@ -896,6 +934,10 @@ document.addEventListener("DOMContentLoaded", function () {
         } catch (_err) {
             await showAlert("Upload failed", "Upload Failed");
         } finally {
+            // hide requirement loader if shown
+            if (selectedRequirementUpload && (selectedRequirementUpload.section === 'pre' || selectedRequirementUpload.section === 'post')) {
+                showRequirementLoading(selectedRequirementUpload.section, selectedRequirementUpload.requirementKey, false);
+            }
             setUploadIndicator(selectedRequirementUpload.trigger, false);
             selectedRequirementUpload = null;
             requirementFileInput.value = "";
