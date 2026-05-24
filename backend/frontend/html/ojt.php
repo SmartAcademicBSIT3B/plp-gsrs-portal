@@ -869,9 +869,7 @@ document.addEventListener("DOMContentLoaded", function () {
         formData.append("section", selectedRequirementUpload.section);
         formData.append("file", file);
 
-        const uploadTrigger = selectedRequirementUpload.trigger || requirementFileInput;
-        setUploadIndicator(uploadTrigger, true, "Uploading...");
-
+        setUploadIndicator(selectedRequirementUpload.trigger, true, "Uploading...");
         try {
             const response = await apiFetch('/api/php/ojt_upload.php', { method: "POST", body: formData });
             const data = await parseJsonSafely(response);
@@ -883,7 +881,7 @@ document.addEventListener("DOMContentLoaded", function () {
         } catch (_err) {
             await showAlert("Upload failed", "Upload Failed");
         } finally {
-            setUploadIndicator(uploadTrigger, false);
+            setUploadIndicator(selectedRequirementUpload.trigger, false);
             selectedRequirementUpload = null;
             requirementFileInput.value = "";
         }
