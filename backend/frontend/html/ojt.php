@@ -641,6 +641,36 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    function setUploadIndicator(target, isUploading, loadingLabel) {
+        if (!target) return;
+        const tag = String(target.tagName || "").toUpperCase();
+        if (isUploading) {
+            if (typeof target.dataset.originalText === "undefined") {
+                target.dataset.originalText = target.textContent.trim();
+            }
+            if (loadingLabel) {
+                target.textContent = loadingLabel;
+            }
+            target.classList.add("loading");
+            if (tag === "BUTTON" || tag === "INPUT") {
+                target.disabled = true;
+            } else {
+                target.style.pointerEvents = "none";
+            }
+        } else {
+            if (typeof target.dataset.originalText !== "undefined") {
+                target.textContent = target.dataset.originalText;
+                delete target.dataset.originalText;
+            }
+            target.classList.remove("loading");
+            if (tag === "BUTTON" || tag === "INPUT") {
+                target.disabled = false;
+            } else {
+                target.style.pointerEvents = "";
+            }
+        }
+    }
+
     function getLocalDateString(date = new Date()) {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -839,6 +869,9 @@ document.addEventListener("DOMContentLoaded", function () {
         formData.append("section", selectedRequirementUpload.section);
         formData.append("file", file);
 
+        const uploadTrigger = selectedRequirementUpload.trigger || requirementFileInput;
+        setUploadIndicator(uploadTrigger, true, "Uploading...");
+
         try {
             const response = await apiFetch('/api/php/ojt_upload.php', { method: "POST", body: formData });
             const data = await parseJsonSafely(response);
@@ -850,6 +883,7 @@ document.addEventListener("DOMContentLoaded", function () {
         } catch (_err) {
             await showAlert("Upload failed", "Upload Failed");
         } finally {
+            setUploadIndicator(uploadTrigger, false);
             selectedRequirementUpload = null;
             requirementFileInput.value = "";
         }
@@ -886,6 +920,8 @@ document.addEventListener("DOMContentLoaded", function () {
             formData.set("week_number", String(weekNumber));
             formData.set("week_start_date", weekStartDate);
 
+            const weeklySubmitBtn = weeklyForm.querySelector('button[type="submit"]');
+            setUploadIndicator(weeklySubmitBtn, true, "Uploading...");
             try {
                 const response = await apiFetch('/api/php/ojt_weekly_upload.php?action=save', {
                     method: "POST",
@@ -901,6 +937,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 await refreshSection("weekly");
             } catch (_err) {
                 await showAlert("Failed to save weekly report.", "Weekly Reports");
+            } finally {
+                setUploadIndicator(weeklySubmitBtn, false);
             }
         });
     }
@@ -968,6 +1006,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 formData.set("notes", String(notesInput.value || "").trim());
             }
 
+            const attendanceSubmitBtn = attendanceForm.querySelector('button[type="submit"]');
+            setUploadIndicator(attendanceSubmitBtn, true, "Uploading...");
             try {
                 const response = await apiFetch('/api/php/ojt_attendance_manage.php?action=save', {
                     method: "POST",
@@ -982,6 +1022,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 await refreshSection("attendance");
             } catch (_err) {
                 await showAlert("Failed to save attendance record.", "Attendance");
+            } finally {
+                setUploadIndicator(attendanceSubmitBtn, false);
             }
         });
     }
@@ -1016,6 +1058,7 @@ document.addEventListener("DOMContentLoaded", function () {
             selectedRequirementUpload = {
                 requirementKey: requirementLabelUpload.dataset.requirementKey,
                 section,
+                trigger: requirementLabelUpload,
             };
             requirementFileInput.click();
             return;
@@ -1028,6 +1071,7 @@ document.addEventListener("DOMContentLoaded", function () {
             selectedRequirementUpload = {
                 requirementKey: requirementUploadBtn.dataset.requirementKey,
                 section,
+                trigger: requirementUploadBtn,
             };
             requirementFileInput.click();
             return;

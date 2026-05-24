@@ -376,8 +376,8 @@ if ($tab === 'pre' || $tab === 'post') {
     $has_verified = (bool)$state['has_verified'];
 
     $templates = [];
-    $tplStmt = $conn->prepare("SELECT id, name, deadline FROM ojt_requirement_templates WHERE type = ? AND is_required = 1 ORDER BY display_order ASC, id ASC");
-    $tplStmt->bind_param('s', $section);
+    $tplStmt = $conn->prepare("SELECT id, name, deadline FROM ojt_requirement_templates WHERE type = ? AND is_required = 1 AND (department = ? OR department IS NULL OR department = '') ORDER BY display_order ASC, id ASC");
+    $tplStmt->bind_param('ss', $section, $student_department);
     $tplStmt->execute();
     $tplRes = $tplStmt->get_result();
     while ($tplRes && $row = $tplRes->fetch_assoc()) {

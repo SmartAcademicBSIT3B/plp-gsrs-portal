@@ -76,14 +76,14 @@ body {
   background: var(--canvas);
   padding: 14px;
   color: var(--text-dark);
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
+  overflow-y: auto;
 }
 
 .dashboard-wrapper {
   max-width: 1260px;
   margin: 0 auto;
-  height: calc(100vh - 28px);
+  min-height: calc(100vh - 28px);
   display: flex;
   flex-direction: column;
 }

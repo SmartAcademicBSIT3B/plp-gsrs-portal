@@ -557,6 +557,35 @@ body {
   filter: brightness(1.04);
 }
 
+.upload-btn.loading,
+.req-label-upload.loading,
+.week-upload-btn.loading,
+.submit-btn.loading {
+  opacity: 0.8;
+  cursor: progress;
+}
+
+.upload-btn.loading::after,
+.req-label-upload.loading::after,
+.week-upload-btn.loading::after,
+.submit-btn.loading::after {
+  content: "";
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-left: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin-indicator 0.85s linear infinite;
+}
+
+@keyframes spin-indicator {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .panel-actions {
   display: flex;
   justify-content: flex-end;
